@@ -490,7 +490,25 @@ html[data-t=dark] .nsub button[aria-selected=true],html[data-t=dark] .dow-b[aria
 html[data-t=dark] .mn-meal.on .mn-chk,html[data-t=dark] .sl-row.on .mn-chk{color:#16120E}
 /* botón de tema */
 .themebtn{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+
+.topbar{position:-webkit-sticky;position:sticky}
+@media(max-width:600px){
+ .topbar{gap:8px 10px;padding:8px 14px;flex-wrap:wrap}
+ .topbar .logo{font-size:21px}
+ .hola{font-size:12px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .topbar .themebtn,.topbar .exit{padding:5px 10px;font-size:11px}
+ .tabs{order:5;width:100%;margin-left:0;flex-wrap:nowrap;gap:4px}
+ .tabs .tab{flex:1;padding:7px 4px;font-size:13px;text-align:center}
+}
 .themebtn:hover{color:var(--fg)}
+.bkbox{margin:32px 0 8px;padding:16px;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;gap:10px}
+.bkbox h4{margin:0;font-family:var(--serif,inherit);font-size:18px;font-weight:400}
+.bkbox p{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
+.bkrow{display:flex;gap:8px;flex-wrap:wrap}
+.bkbox button{font:inherit;font-size:13px;color:var(--fg);background:none;border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer}
+.bkbox button.pri{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+#bkmsg{font-size:12px;color:var(--muted)}
+
 #themeacc{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px;z-index:6}
 #access[hidden]~#themeacc,body.in #themeacc{display:none}
 
@@ -627,7 +645,8 @@ html[data-t=light]{--p1:#E05610;--p2:#7E63A8;--p3:#1C8C7A;--p4:#B88A17}
     <section class="panel" id="p-plan" hidden></section>
     <section class="panel" id="p-datos" hidden></section>
     <section class="panel" id="p-nutri" hidden></section>
-  </div>
+  <div class="bkbox" id="bkbox"><h4>Copia de seguridad</h4><p>Tus datos viven solo en este móvil. Guarda una copia de vez en cuando (en Archivos, Drive o mándatela por WhatsApp) y podrás recuperarlo todo si cambias de móvil o se borra la app.</p><div class="bkrow"><button class="pri" id="bkexp">Guardar copia</button><button id="bkimp">Restaurar copia</button><input type="file" id="bkfile" accept=".json,application/json" hidden></div><span id="bkmsg"></span></div>
+</div>
 </div>
 
 <div id="nutri-bg" hidden><div class="nb-glow nb1"></div><div class="nb-glow nb2"></div><div class="nb-glow nb3"></div><div class="nb-glow nb4"></div><div class="nb-food" id="nbfood"></div></div>
@@ -1530,4 +1549,21 @@ $("#weekview").addEventListener("click",e=>{
   if(!k){ const s=load(); if(s&&DATA.profiles[s]) k=s; }
   if(k) login(k);
 })();
-</script><script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script><script>document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('themebtn'))window.__tema.cycle()});window.__tema.apply();</script></body></html>
+</script><script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script><script>document.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('themebtn'))window.__tema.cycle()});window.__tema.apply();</script><script>
+(function(){
+function msg(t){var m=document.getElementById('bkmsg');if(m)m.textContent=t}
+function upd(){try{var d=localStorage.getItem('umbral_lastbk');if(d)msg('Última copia: '+new Date(+d).toLocaleDateString('es-ES',{day:'numeric',month:'long'}));else msg('Aún no has guardado ninguna copia.')}catch(e){}}
+function gather(){var o={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('umbral')===0&&k!=='umbral_lastbk')o[k]=localStorage.getItem(k)}return {app:'umbral',v:1,fecha:new Date().toISOString(),data:o}}
+document.addEventListener('click',function(e){var id=e.target&&e.target.id;
+if(id==='bkexp'){var b=gather(),name='umbral-copia-'+new Date().toISOString().slice(0,10)+'.json';
+var file=new File([JSON.stringify(b)],name,{type:'application/json'});
+var done=function(){try{localStorage.setItem('umbral_lastbk',Date.now())}catch(x){}upd()};
+if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Copia Umbral'}).then(done).catch(function(){})}
+else{var a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove();done()}}
+if(id==='bkimp'){document.getElementById('bkfile').click()}});
+document.addEventListener('change',function(e){if(e.target.id!=='bkfile')return;var f=e.target.files[0];if(!f)return;var r=new FileReader();
+r.onload=function(){try{var b=JSON.parse(r.result);if(b.app!=='umbral'||!b.data)throw 0;
+if(!confirm('Restaurar esta copia sustituirá los datos actuales. ¿Continuar?'))return;
+Object.keys(b.data).forEach(function(k){if(k.indexOf('umbral')===0)localStorage.setItem(k,b.data[k])});msg('Copia restaurada. Recargando…');setTimeout(function(){location.reload()},700)}catch(x){msg('Ese archivo no es una copia de Umbral.')}};r.readAsText(f);e.target.value=''});
+upd()})();
+</script></body></html>
