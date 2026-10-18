@@ -55,7 +55,7 @@ input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px;border
 
 /* DIARIO */
 #diary[hidden]{display:none}
-.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
   padding:14px 20px;background:var(--bg);border-bottom:1px solid var(--line)}
 .topbar .logo{font-family:var(--disp);font-size:26px;letter-spacing:.03em}
 .hola{color:var(--muted);font-size:14px}
@@ -113,7 +113,7 @@ a.src{color:var(--accent)}
 .wv-g2{width:46vw;height:46vw;max-width:440px;max-height:440px;background:var(--wv-g2c);opacity:.42;left:-13vw;bottom:-4vw}
 .wv-top{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:12px;
   padding:calc(13px + env(safe-area-inset-top,0px)) 20px 13px;
-  background:color-mix(in srgb,var(--wv-bg) 82%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--wv-line)}
+  background:var(--wv-bg);border-bottom:1px solid var(--wv-line)}
 .wv-back{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--wv-ink);
   background:rgba(255,255,255,.55);border:1px solid var(--wv-line);border-radius:999px;padding:8px 15px;cursor:pointer}
 .wv-back:hover{background:rgba(255,255,255,.85)}
@@ -491,9 +491,9 @@ html[data-t=dark] .mn-meal.on .mn-chk,html[data-t=dark] .sl-row.on .mn-chk{color
 /* botón de tema */
 .themebtn{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
 
-.topbar{position:-webkit-sticky;position:sticky;background:var(--bg);box-shadow:0 1px 0 var(--line),0 6px 12px -8px rgba(0,0,0,.35)}
+.topbar{position:-webkit-sticky;position:sticky;top:0;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg);box-shadow:0 1px 0 var(--line),0 6px 12px -8px rgba(0,0,0,.35)}
 @media(max-width:600px){
- .topbar{gap:8px 10px;padding:8px 14px;flex-wrap:wrap}
+ .topbar{gap:8px 10px;padding:8px 14px;padding-top:calc(8px + env(safe-area-inset-top,0px));flex-wrap:wrap}
  .topbar .logo{font-size:21px}
  .hola{font-size:12px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  .topbar .themebtn,.topbar .exit{padding:5px 10px;font-size:11px}
